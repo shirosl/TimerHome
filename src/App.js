@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+// At the top of App.js
+const MAPS_API_KEY =
+  process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "YOUR_API_KEY";
 
 const App = () => {
   // State for countdown values
@@ -238,35 +241,32 @@ const App = () => {
                     background-position: center center;
                     background-repeat: no-repeat;
                     background-attachment: fixed;
-                    position: relative; /* For the overlay */
+                    position: relative;
+                    min-height: 100vh;
+                    margin: 0;
+                    padding: 0;
                 }
 
+                /* Remove the blue overlay from body */
                 body::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background-color: rgba(42, 67, 101, 0.6); /* Dark blue overlay */
-                    z-index: -1; /* Behind content */
+                    content: none;
                 }
 
-                .bg-gradient-radial { /* Kept as fallback if image fails, or could be removed */
-                    background: radial-gradient(circle at center, #63b3ed 0%, #3182ce 50%, #2a4365 100%);
+                .bg-gradient-radial {
+                    /* Keep as fallback but make it transparent */
+                    background: transparent;
                 }
 
-                .countdown-container, .baggage-container, .map-section-container { /* Added map container */
-                    background-color: rgba(0, 0, 0, 0.5); /* Increased opacity for better visibility */
+                .countdown-container, .baggage-container, .map-container {
+                    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
                     border-radius: 20px;
                     padding: 2.5rem;
                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                     text-align: center;
                     color: #e2e8f0;
-                    backdrop-filter: blur(5px);
                     max-width: 90%;
                     position: relative;
-                    margin-bottom: 2rem;
+                    margin: 1rem auto;
                     animation: fadeIn 1s ease-out forwards;
                 }
 
@@ -275,7 +275,7 @@ const App = () => {
                     to { opacity: 1; transform: translateY(0); }
                 }
 
-                .countdown-title, .baggage-title, .map-title { /* Added map title */
+                .countdown-title, .baggage-title, .flight-title { /* Added flight title */
                     font-size: 2.5rem;
                     font-weight: 700;
                     margin-bottom: 2rem;
@@ -361,7 +361,7 @@ const App = () => {
                 .baggage-list li[data-item="bible"]::before { content: '📖'; }
                 .baggage-list li[data-item="clothes"]::before { content: '👕'; }
                 .baggage-list li[data-item="undergarments"]::before { content: '🩲'; }
-                .baggage-list li[data-item="sleepwear"]::before { content: '🛌'; }
+                .baggage-list li[data-item="sleepwear"]::before { content: '🛋️'; }
                 .baggage-list li[data-item="toiletries"]::before { content: '🧴'; }
                 .baggage-list li[data-item="medications"]::before { content: '💊'; }
                 .baggage-list li[data-item="towel"]::before { content: '🧖‍♀️'; }
@@ -504,139 +504,65 @@ const App = () => {
                     animation: flyPlane 5s forwards ease-in-out;
                 }
 
-                /* Map Section Styles */
-                .map-section-container {
-                    margin-top: 2rem;
-                    width: 100%;
+                /* Combined Map and Animation Styles */
+                .map-container {
+                  background-color: rgba(0, 0, 0, 0.5);
+                  border-radius: 20px;
+                  padding: 2rem;
+                  margin: 1rem auto;
+                  max-width: 90%;
+                  text-align: center;
+                  color: #e2e8f0;
                 }
 
-                .map-display {
-                    position: relative;
-                    width: 100%;
-                    max-width: 800px; /* Max width for map */
-                    margin: 0 auto;
-                    aspect-ratio: 16/9; /* Maintain aspect ratio */
-                    overflow: hidden;
-                    border-radius: 15px;
-                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
-                    background-color: #333; /* Fallback for map image loading */
+                .map-wrapper {
+                  position: relative;
+                  margin: 0 auto;
+                  max-width: 800px;
+                  height: 400px;
+                  border-radius: 10px;
+                  overflow: hidden;
                 }
 
                 .map-image {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover; /* Cover the map area */
-                    display: block;
+                  width: 100%;
+                  height: 100%;
+                  object-fit: cover;
                 }
 
-                .map-plane-icon {
-                    position: absolute;
-                    font-size: 2rem; /* Smaller plane for map */
-                    color: #f6ad55; /* Orange to stand out */
-                    text-shadow: 0 0 8px rgba(246, 173, 85, 0.8);
-                    opacity: 0;
-                    animation: none;
-                    transform: translate(-50%, -50%) rotate(0deg); /* Initial position and rotation */
-                    transition: opacity 0.5s ease-in-out; /* Smooth fade-in */
+                .plane {
+                  position: absolute;
+                  top: 40%;  /* Centered vertically */
+                  left: 15%; /* Starting from the left (South Korea) */
+                  font-size: 1.8rem;
+                  transform: translate(-50%, -50%);
+                  animation: fly 6s linear infinite;
+                  z-index: 2;
+                  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
                 }
 
-                @keyframes flyMapPlane {
-                    0% { left: 70%; top: 20%; opacity: 0; transform: translate(-50%, -50%) rotate(-30deg); }
-                    10% { opacity: 1; }
-                    90% { left: 45%; top: 75%; opacity: 1; }
-                    100% { left: 45%; top: 75%; opacity: 0; transform: translate(-50%, -50%) rotate(-30deg); } /* Ends at Malaysia, then fades out */
+                @keyframes fly {
+                  0% { 
+                    left: 15%;
+                    top: 40%;
+                    transform: translate(-50%, -50%) rotate(0deg);
+                  }
+                  100% { 
+                    left: 85%;
+                    top: 40%;
+                    transform: translate(-50%, -50%) rotate(0deg);
+                  }
                 }
 
-                .map-plane-icon.active {
-                    animation: flyMapPlane 4s forwards ease-in-out 0.5s; /* Slightly delayed from main plane */
-                }
-
-                .map-label {
-                    position: absolute;
-                    font-size: 0.9rem;
-                    color: #ffffff;
-                    font-weight: bold;
-                    text-shadow: 0 0 5px rgba(0,0,0,0.7);
-                    background-color: rgba(0,0,0,0.3);
-                    padding: 0.2rem 0.5rem;
-                    border-radius: 5px;
-                }
-
-                .korea-label {
-                    top: 15%;
-                    left: 65%;
-                    transform: translateX(-50%);
-                }
-
-                .malaysia-label {
-                    top: 80%;
-                    left: 40%;
-                    transform: translateX(-50%);
-                }
-
-
-                /* Responsive adjustments */
                 @media (max-width: 768px) {
-                    .countdown-container, .baggage-container, .map-section-container {
-                        padding: 1.5rem;
-                        margin-bottom: 1.5rem;
-                    }
-                    .countdown-title, .baggage-title, .map-title {
-                        font-size: 1.8rem;
-                        margin-bottom: 1.5rem;
-                    }
-                    .countdown-item {
-                        margin: 0 0.8rem;
-                    }
-                    .countdown-item span {
-                        font-size: 3.5rem;
-                        min-width: 80px;
-                    }
-                    .countdown-item div {
-                        font-size: 1rem;
-                    }
-                    .message {
-                        font-size: 1.4rem;
-                        margin-top: 2rem;
-                    }
-                    .reunion-particle {
-                        width: 20px;
-                        height: 20px;
-                    }
-                    .baggage-list li {
-                        font-size: 1rem;
-                    }
-                    #packedMessage {
-                        font-size: 1.4rem;
-                    }
-                    .plane-icon {
-                        font-size: 2rem;
-                    }
-                    .map-plane-icon {
-                        font-size: 1.5rem;
-                    }
-                    .map-label {
-                        font-size: 0.75rem;
-                        padding: 0.15rem 0.4rem;
-                    }
+                  .map-wrapper {
+                    height: 300px;
+                  }
+                  .plane {
+                    font-size: 1.5rem;
+                  }
                 }
-
-                @media (max-width: 480px) {
-                    .countdown-item {
-                        margin: 0 0.5rem;
-                    }
-                    .countdown-item span {
-                        font-size: 2.5rem;
-                        min-width: 60px;
-                    }
-                    .countdown-item div {
-                        font-size: 0.8rem;
-                    }
-                    .baggage-list li {
-                        font-size: 0.9rem;
-                    }
-                }
-            `}</style>
+              `}</style>
 
       <div className="countdown-container">
         <h1 className="countdown-title">Journey Home: Arrival Countdown</h1>
@@ -685,33 +611,81 @@ const App = () => {
       )}
 
       {/* Map Section */}
-      <div className="map-section-container">
-        <h2 className="map-title">Flight Path Overview</h2>
-        <div className="map-display">
-          {/* Updated Map image URL to a more general political map of Asia. */}
+      <div className="map-container">
+        <h2>Flight to Home</h2>
+        <div className="map-wrapper">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Map_of_Asia_%28political%29.svg/1280px-Map_of_Asia_%28political%29.svg.png"
-            alt="Map of Asia"
+            src={`https://maps.googleapis.com/maps/api/staticmap?center=15,110&zoom=3&size=800x400&path=color:0xff0000%7Cweight:2%7C37.5665,126.9780%7C3.1390,101.6869&markers=color:blue%7C37.5665,126.9780%7C3.1390,101.6869&key=${MAPS_API_KEY}`}
+            alt="Flight Path from Seoul to Kuala Lumpur"
             className="map-image"
             onError={(e) => {
               e.target.onerror = null;
               e.target.src =
-                "https://placehold.co/1280x720/333/fff?text=Map+Not+Loaded";
-            }} // Fallback image
+                "https://placehold.co/800x400/333/fff?text=Map+Not+Available";
+            }}
           />
-          <span
-            role="img"
-            aria-label="flying-plane"
-            className={`map-plane-icon ${
-              playMapPlaneAnimation ? "active" : ""
-            }`}
-          >
-            ✈️
-          </span>
-          <div className="map-label korea-label">South Korea</div>
-          <div className="map-label malaysia-label">Malaysia</div>
+          <div className="plane">✈️</div>
         </div>
       </div>
+
+      <style>{`
+        .map-container {
+          background-color: rgba(0, 0, 0, 0.5);
+          border-radius: 20px;
+          padding: 2rem;
+          margin: 1rem auto;
+          max-width: 90%;
+          text-align: center;
+        }
+
+        .map-wrapper {
+          position: relative;
+          margin: 0 auto;
+          max-width: 800px;
+          height: 400px;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+
+        .map-image {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .plane {
+          position: absolute;
+          top: 40%;  /* Centered vertically */
+          left: 15%; /* Starting from the left (South Korea) */
+          font-size: 1.8rem;
+          transform: translate(-50%, -50%);
+          animation: fly 6s linear infinite;
+          z-index: 2;
+          filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+        }
+
+        @keyframes fly {
+          0% { 
+            left: 15%;
+            top: 40%;
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          100% { 
+            left: 85%;
+            top: 40%;
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .map-wrapper {
+            height: 300px;
+          }
+          .plane {
+            font-size: 1.5rem;
+          }
+        }
+      `}</style>
 
       {/* Reunion Particles */}
       {showReunionAnimation && (
