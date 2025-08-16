@@ -507,7 +507,7 @@ const App = () => {
                 /* Combined Map and Animation Styles */
                 .map-container {
                   background-color: rgba(0, 0, 0, 0.5);
-                  border-radius: 20px;
+                  border-radius: 10px;
                   padding: 2rem;
                   margin: 1rem auto;
                   max-width: 90%;
@@ -519,23 +519,24 @@ const App = () => {
                   position: relative;
                   margin: 0 auto;
                   max-width: 800px;
-                  height: 400px;
+                  height: 450px;  
                   border-radius: 10px;
                   overflow: hidden;
                 }
 
                 .map-image {
                   width: 100%;
-                  height: 100%;
+                  height: 120%;  
                   object-fit: cover;
+                  object-position: center 30%;  
                 }
 
                 .plane {
                   position: absolute;
-                  top: 40%;  /* Centered vertically */
-                  left: 15%; /* Starting from the left (South Korea) */
+                  top: 5%;  
+                  right: 50%; 
                   font-size: 1.8rem;
-                  transform: translate(-50%, -50%);
+                  transform: translate(50%, -50%) rotate(-50deg); 
                   animation: fly 6s linear infinite;
                   z-index: 2;
                   filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
@@ -543,14 +544,14 @@ const App = () => {
 
                 @keyframes fly {
                   0% { 
-                    left: 15%;
-                    top: 40%;
-                    transform: translate(-50%, -50%) rotate(0deg);
+                    right: 50%;
+                    top: 30%;
+                    transform: translate(50%, -50%) rotate(-50deg);
                   }
                   100% { 
-                    left: 85%;
-                    top: 40%;
-                    transform: translate(-50%, -50%) rotate(0deg);
+                    right: 85%;
+                    top: 60%;
+                    transform: translate(50%, -50%) rotate(-50deg);
                   }
                 }
 
@@ -565,7 +566,7 @@ const App = () => {
               `}</style>
 
       <div className="countdown-container">
-        <h1 className="countdown-title">Journey Home: Arrival Countdown</h1>
+        <h1 className="countdown-title">Journey Malaysia: Arrival Countdown</h1>
         <div id="countdown" className="flex justify-center items-center">
           <div className="countdown-item">
             <span id="hours">{hours}</span>
@@ -582,7 +583,7 @@ const App = () => {
         </div>
         {arrivalMessageShow && (
           <p className="message show">
-            The wait is over! Welcome home, my dearest!
+            The wait is over! 말레이시아에 온 걸 환영해, 내 사랑 예민아! 🌸
           </p>
         )}
       </div>
@@ -631,7 +632,7 @@ const App = () => {
       <style>{`
         .map-container {
           background-color: rgba(0, 0, 0, 0.5);
-          border-radius: 20px;
+          border-radius: 10px;
           padding: 2rem;
           margin: 1rem auto;
           max-width: 90%;
@@ -642,23 +643,24 @@ const App = () => {
           position: relative;
           margin: 0 auto;
           max-width: 800px;
-          height: 400px;
+          height: 450px;  
           border-radius: 10px;
           overflow: hidden;
         }
 
         .map-image {
           width: 100%;
-          height: 100%;
+          height: 120%;  
           object-fit: cover;
+          object-position: center 30%;  
         }
 
         .plane {
           position: absolute;
-          top: 40%;  /* Centered vertically */
-          left: 15%; /* Starting from the left (South Korea) */
+          top: 7%;  
+          right: 25%; 
           font-size: 1.8rem;
-          transform: translate(-50%, -50%);
+          transform: translate(50%, -50%) rotate(-50deg); 
           animation: fly 6s linear infinite;
           z-index: 2;
           filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
@@ -666,14 +668,14 @@ const App = () => {
 
         @keyframes fly {
           0% { 
-            left: 15%;
-            top: 40%;
-            transform: translate(-50%, -50%) rotate(0deg);
+            right: 33%;
+            top: 13%;
+            transform: translate(50%, -50%) rotate(-190deg);
           }
           100% { 
-            left: 85%;
-            top: 40%;
-            transform: translate(-50%, -50%) rotate(0deg);
+            right: 56%;
+            top: 77%;
+            transform: translate(50%, -50%) rotate(-190deg);
           }
         }
 
